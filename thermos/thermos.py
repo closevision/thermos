@@ -1,12 +1,26 @@
 from datetime import datetime
-from os import urandom
+import os
+
 from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
 
 from forms import BookmarkForm
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 app = Flask(__name__)
+app.config['SECRET_KEY'] = os.urandom(24)
+
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'thermos.db')
+
+# FSADeprecationWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and 
+# will be disabled by default in the future.  Set it to True or False to suppress this warning.
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+
+db = SQLAlchemy(app)
+
 bookmarks = []
-app.config['SECRET_KEY'] = urandom(24)
 
 def store_bookmark(url, description):
     bookmarks.append(dict(

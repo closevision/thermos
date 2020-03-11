@@ -11,8 +11,8 @@ Thermos -- Add a URL
        <form action"" method="post">
            {{form.hidden_tag()}}
            <table>
-               {{ render_field(form.url, size=50) }}
-               {{ render_field(form.description, size=50) }}
+               {{ render_field(form.url, size=50, placeholder="https://example.com") }}
+               {{ render_field(form.description, size=50, placeholder="My favorite site") }}
                <tr class="submit">
                    <td></td>
                    <td><button type="submit">Submit</button></td>
