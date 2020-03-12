@@ -5,6 +5,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 
 from forms import BookmarkForm
+import models
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -30,14 +31,15 @@ def store_bookmark(url, description):
         date = datetime.utcnow()
     ))
 
-def new_bookmarks(num):
-    return sorted(bookmarks, key=lambda bm: bm['date'], reverse=True)[:num]
+#def new_bookmarks(num):
+#     '''Retrieves and sorts bookmarks from the list.'''
+#    return sorted(bookmarks, key=lambda bm: bm['date'], reverse=True)[:num]
 
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html', new_bookmarks=new_bookmarks(5))
-
+    #return render_template('index.html', new_bookmarks=new_bookmarks(5))
+    return render_template('index.html', new_bookmarks=models.Bookmark.newest(5))
 
 @app.route('/add', methods=['GET','POST'])
 def add():
@@ -45,7 +47,11 @@ def add():
     if form.validate_on_submit():
         url = form.url.data
         description = form.description.data
-        store_bookmark(url, description)
+        #Stored bookmarks in a list. 
+        #store_bookmark(url, description)
+        bm = models.Bookmark(url=url, description=description)
+        db.session.add(bm)
+        db.session.commit()
         flash("Stored '{}'".format(description))
         return redirect(url_for('index'))
     return render_template('add.html', form=form)
